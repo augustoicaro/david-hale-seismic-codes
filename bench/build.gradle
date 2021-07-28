@@ -5,14 +5,17 @@ defaultTasks 'compileJava'
 description = "Dave's research"
 sourceCompatibility = 1.7
 
-sourceSets {
-  main {
-    output.classesDir = 'build/classes'
-    output.resourcesDir = output.classesDir
-    java {
-      srcDir 'src'
-      exclude '**/new/**','**/old/**'
-    }
+sourceSets.main.java.srcDirs = ['src']
+sourceSets.main.java.excludes = ['**/new/**','**/old/**']
+sourceSets.main.java.outputDir = file('build/classes')
+sourceSets.main.output.resourcesDir = file('src')
+
+buildscript {
+  ext {
+    version_junit= "4.12"
+    version_jogl = "2.3.2"
+    version_gluegen = "2.3.2"
+    version_jython = "2.7.0"
   }
 }
 
@@ -23,8 +26,40 @@ jar {
   }
 }
 
+repositories {
+  mavenCentral()
+  flatDir {
+    dirs 'libs'
+    dirs '../../jtk/core/build/libs'
+  }
+}
+
 dependencies {
-  compile fileTree('../../jtk/build/libs') // for edu_mines_jtk.jar
-  compile fileTree('../../jtk/libs') // jars provided with the Mines JTK
-  compile fileTree('libs') // jars used in research, not in the Mines JTK
+  implementation "junit:junit:$version_junit"
+  implementation "org.jogamp.jogl:jogl-all-main:$version_jogl"
+  implementation "org.jogamp.gluegen:gluegen-rt-main:$version_gluegen"
+  implementation "org.python:jython-standalone:$version_jython"
+  implementation fileTree('../../jtk/core/build/libs') { include '*.jar' } // for edu_mines_jtk.jar
+  implementation fileTree('libs') { include '*.jar' } // jars used in research, not in the Mines JTK
+}
+
+task run(type: JavaExec) {
+  description = 'Runs a demo Java main or Jython script. For example,\n' +
+                '        gradle run -x processResources -P app=lcc.Warp1\n' +
+                '        gradle run -x processResources -P app=lcc/warp2.py'
+  if (project.hasProperty('app')) {
+    enableAssertions = true
+    classpath = sourceSets.main.runtimeClasspath
+    //println "demo = "+demo // classpath may be useful for debugging
+    //println "classpath = "; classpath.each { println it }
+    if (app.endsWith('.py')) {
+      app = 'src/' + app
+      main = 'org.python.util.jython'
+      jvmArgs '-Dpython.cachedir.skip=false',
+              "-Dpython.cachedir=${buildDir}/jython-cache/"
+      args app
+    } else {
+      main = app 
+    }
+  }
 }
