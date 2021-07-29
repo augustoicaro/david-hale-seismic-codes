@@ -1,5 +1,7 @@
 # Dave Hale's personal repository
 
+__David Hale didn't provide the data folder, so try to understand how functions work and use your data.__
+
 Folders descriptions:
 
 * __bench/:__ Dave's workbench for research
