@@ -17,19 +17,24 @@ This repository install all java dependencies that you need to use files of __be
 
 Steps:
 
-1. Build docker container:
+1. Check in `Dockerfile:15` if the JVM heap size it is ok: (Change 24 to the desired size)
+    ``` docker
+    ENV _JAVA_OPTIONS -Xmx24g
+    ```
+
+2. Build docker container:
 
     ``` bash
     docker build --build-arg USERNAME=$USER --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t hale/idh:latest .
     ```
 
-2. Enter in container with compiled JTK and binded IDH folder
+3. Enter in container with compiled JTK and binded IDH folder
 
     ``` bash
     docker run -it --gpus all --name idh --rm --net host -v /home/$USER/idh:/home/$USER/idh -v /home/$USER/idh/data:/data -v /tmp/.X11-unix:/tmp/.X11-unix -v /etc/resolv.conf:/etc/resolv.conf -v /usr/lib/nvidia:/usr/lib/nvidia -e DISPLAY=$DISPLAY -e XAUTHORITY -e NVIDIA_DRIVER_CAPABILITIES=all hale/idh:latest bash
     ```
 
-3. (Optional) Run JTK tests
+4. (Optional) Run JTK tests
 
     ``` bash
     cd jtk
@@ -38,7 +43,7 @@ Steps:
     gradle run -P demo=ogl.HelloDemo
     ```
 
-4. Build bench folder
+5. Build bench folder
 
     ``` bash
     cd 
@@ -46,7 +51,7 @@ Steps:
     gradle 
     ```
 
-5. Run a code
+6. Run a code
 
     ``` bash
     gradle run -x processResources -P app=lcc.Warp1

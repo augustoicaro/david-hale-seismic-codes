@@ -11,6 +11,8 @@ ENV GID ${GID:-1000}
 
 ENV LC_ALL en_US.UTF-8
 
+# Change JVM max memory size
+ENV _JAVA_OPTIONS -Xmx24g
 
 RUN apt-get update && apt-get -y install libxext-dev \
     libxrender-dev \
