@@ -31,6 +31,9 @@ RUN git clone https://github.com/MinesJTK/jtk.git /home/${USERNAME}/jtk && \
     cd /home/${USERNAME}/jtk && \
     gradle
 
+# Create Data folder for binding
+RUN cd / && mkdir -p data
+
 #Define usuário e suas permissões
 RUN mkdir -p /home/${USERNAME}/.local/share && \
     mkdir -p /home/${USERNAME}/idh && \
